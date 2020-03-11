@@ -56,11 +56,19 @@ object Main extends App {
     }
   }
 
-  //def listByfName(fname:String) = {
-  //  val queryFuture = Future {
-  //    db.run(peopleTable.result).map()
-  //  }
-  //}
+  def addPerson(fName: String, lName: String, age: Int, email: String, id: Int = 0) = {
+    val data = Iterable(id, fName, lName, age, email)
+    val addFuture = Future {
+      val add = peopleTable ++= Seq(
+        (id,fName,lName,age,email)
+      )
+      db.run(add)
+    }
+    Await.result(addFuture, Duration.Inf).andThen {
+      case Success(_) => println("Successfully added")
+      case Failure(error) => println(s"Adding failed: ${error.getMessage}")
+    }
+  }
 
   def updateByID(id:Int, toUpdate: String, item:String) = {
     val updateFuture = Future {
@@ -92,7 +100,18 @@ object Main extends App {
     }
   }
 
-  updateAgeByID(1, 36)
+  def deleteByID(id: Int) = {
+    val deleteFuture = Future {
+      val query = peopleTable.filter(_.id === id)
+      db.run(query.delete)
+    }
+    Await.result(deleteFuture, Duration.Inf).andThen {
+      case Success(_) => println("Item successfully deleted")
+      case Failure(error) => println(s"Deletion failed: ${error.getMessage}")
+    }
+  }
+
+  addPerson("Test","Person",40,"test@mail.com")
   Thread.sleep(1000)
   listPeople
   Thread.sleep(5000)
