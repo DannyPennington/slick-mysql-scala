@@ -81,7 +81,18 @@ object Main extends App {
     }
   }
 
-  updateByID(1,"email", "steve@mail.com")
+  def updateAgeByID(id: Int, item: Int) = {
+    val updateFuture = Future {
+      val query = for {i <- peopleTable if i.id === id} yield i.age
+      db.run(query.update(item))
+    }
+    Await.result(updateFuture, Duration.Inf).andThen {
+      case Success(_) => println("Updated")
+      case Failure(error) => println(s"Updating failed: ${error.getMessage}")
+    }
+  }
+
+  updateAgeByID(1, 36)
   Thread.sleep(1000)
   listPeople
   Thread.sleep(5000)
