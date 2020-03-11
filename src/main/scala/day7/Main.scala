@@ -62,18 +62,27 @@ object Main extends App {
   //  }
   //}
 
-  def updatefNameByID(id:Int,name:String) = {
+  def updateByID(id:Int, toUpdate: String, item:String) = {
     val updateFuture = Future {
-      val query = for {i <- peopleTable if i.id === id} yield i.fName
-      db.run(query.update(name))
-    }
+      toUpdate match {
+        case "fName" =>
+          val query = for {i <- peopleTable if i.id === id} yield i.fName
+          db.run(query.update(item))
+        case "lName" =>
+          val query = for {i <- peopleTable if i.id === id} yield i.lName
+          db.run(query.update(item))
+        case "email" =>
+          val query = for {i <- peopleTable if i.id === id} yield i.email
+          db.run(query.update(item))
+    } }
     Await.result(updateFuture, Duration.Inf).andThen {
       case Success(_) => println("Updated")
       case Failure(error) => println(s"Update failed: ${error.getMessage}")
     }
   }
 
-  updatefNameByID(1,"Steve")
+  updateByID(1,"email", "steve@mail.com")
+  Thread.sleep(1000)
   listPeople
   Thread.sleep(5000)
 
