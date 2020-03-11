@@ -115,7 +115,7 @@ object Main extends App {
     val searchFuture = Future {
       val query = peopleTable.filter(_.id === id)
       db.run(query.result).map(_.foreach {
-        case (id, fName, lName, age, email) => println(s"ID: ${id} \nName: ${fName} ${lName}\nAge: ${age} \nEmail: ${email}")
+        case (id, fName, lName, age, email) => println(s"ID: $id \nName: $fName $lName\nAge: $age \nEmail: $email")
       })
     }
     Await.result(searchFuture, Duration.Inf).andThen {
