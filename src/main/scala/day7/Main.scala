@@ -116,6 +116,7 @@ object Main extends App {
       val query = peopleTable.filter(_.id === id)
       db.run(query.result).map(_.foreach {
         case (id, fName, lName, age, email) => println(s"ID: $id \nName: $fName $lName\nAge: $age \nEmail: $email")
+        case _ => println("No results found!")
       })
     }
     Await.result(searchFuture, Duration.Inf).andThen {
@@ -124,9 +125,16 @@ object Main extends App {
     }
   }
 
+  def countPeople() = {
+    val countFuture = Future {
+      db.run(peopleTable.length.result)
+    }
+    Await
+  }
 
-  Thread.sleep(1000)
-  searchByID(2)
+
+
+  countPeople()
   Thread.sleep(5000)
 
 }
