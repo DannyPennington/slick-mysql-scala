@@ -111,9 +111,22 @@ object Main extends App {
     }
   }
 
-  addPerson("Test","Person",40,"test@mail.com")
+  def searchByID(id: Int) = {
+    val searchFuture = Future {
+      val query = peopleTable.filter(_.id === id)
+      db.run(query.result).map(_.foreach {
+        case (id, fName, lName, age, email) => println(s"ID: ${id} \nName: ${fName} ${lName}\nAge: ${age} \nEmail: ${email}")
+      })
+    }
+    Await.result(searchFuture, Duration.Inf).andThen {
+      case Success(_) => println("")
+      case Failure(error) => println(s"Search failed: ${error.getMessage}")
+    }
+  }
+
+
   Thread.sleep(1000)
-  listPeople
+  searchByID(2)
   Thread.sleep(5000)
 
 }
